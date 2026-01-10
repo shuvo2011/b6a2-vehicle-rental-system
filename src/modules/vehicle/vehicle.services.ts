@@ -18,7 +18,7 @@ const getVehicles = async () => {
 
 const getVehicle = async (id: string) => {
 	const result = await pool.query("SELECT * FROM vehicles WHERE id = $1", [id]);
-	return result.rows[0];
+	return result;
 };
 
 const updateVehicle = async (
