@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { pool } from "../../config/db";
 import { userServices } from "./user.service";
+import { AuthRequest } from "../../middleware/auth";
 
 const getUsers = async (req: Request, res: Response) => {
 	try {
@@ -19,25 +20,30 @@ const getUsers = async (req: Request, res: Response) => {
 	}
 };
 
-const updateUser = async (req: Request, res: Response) => {
-	const { name, email, role, phone } = req.body;
+const updateUser = async (req: AuthRequest, res: Response) => {
 	try {
-		const result = await userServices.updateUser(name, email, req.params.userId as string, role, phone);
-
-		if (result.rows.length === 0) {
-			return res.status(404).json({
+		if (req.user?.role !== "admin" && req.body?.role) {
+			return res.status(403).json({
 				success: false,
-				message: "User not found",
-			});
-		} else {
-			return res.status(200).json({
-				success: true,
-				message: "User updated successfully",
-				data: result.rows[0],
+				message: "Forbidden: You cannot change role",
 			});
 		}
+
+		const { name, email, role, phone } = req.body;
+
+		const result = await userServices.updateUser(name, email, req.params.userId as string, role, phone, req.user?.role);
+
+		if (result.rows.length === 0) {
+			return res.status(404).json({ success: false, message: "User not found" });
+		}
+
+		return res.status(200).json({
+			success: true,
+			message: "User updated successfully",
+			data: result.rows[0],
+		});
 	} catch (error: any) {
-		return res.status(500).json({
+		return res.status(error.status || 500).json({
 			success: false,
 			message: error.message,
 		});
