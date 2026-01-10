@@ -8,7 +8,7 @@ const createVehicle = async (req: Request, res: Response) => {
 
 		res.status(201).json({
 			success: true,
-			message: "Data inserted successfully",
+			message: "Vehicle created successfully",
 			data: result.rows[0],
 		});
 	} catch (err: any) {

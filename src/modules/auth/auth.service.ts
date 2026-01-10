@@ -31,7 +31,7 @@ const registerUser = async (payload: { name: string; email: string; password: st
 
 const loginUser = async (email: string, password: string) => {
 	const result = await pool.query(
-		`SELECT id, name, email, password, role, phone
+		`SELECT id, name, email, password, phone, role
      FROM users WHERE email = $1`,
 		[email.toLowerCase()]
 	);

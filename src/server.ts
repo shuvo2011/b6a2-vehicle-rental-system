@@ -11,8 +11,8 @@ const app = express();
 
 const port = config.port;
 
-app.use(express.json()); // JSON body parser
-app.use(express.urlencoded({ extended: true })); // optional
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 initDB();
 
